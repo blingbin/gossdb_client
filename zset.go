@@ -3,7 +3,7 @@ package gossdb_client
 import (
 	"fmt"
 	"strconv"
-	"gossdb_client/to"
+	"github.com/houbin910902/gossdb_client/to"
 )
 
 //  设置 zset 中指定 key 对应的权重值.

@@ -1,7 +1,7 @@
 package gossdb_client
 
 import (
-	"gossdb_client/gossdb/ssdb"
+	"github.com/houbin910902/gossdb_client/gossdb/ssdb"
 	"fmt"
 )
 
