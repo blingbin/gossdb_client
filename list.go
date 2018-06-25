@@ -20,7 +20,7 @@ var (
 func (c *DbClient) Qsize(name string) (size int64, err error) {
 	resp, err := c.Client.Do("qsize", name)
 	if err != nil {
-		return -1, fmt.Errorf("QSize %s error", name)
+		return -1, fmt.Errorf("QSize %s error: %s", name, err.Error())
 	}
 
 	if len(resp) == 2 && resp[0] == "ok" {
@@ -36,7 +36,7 @@ func (c *DbClient) Qsize(name string) (size int64, err error) {
 func (c *DbClient) QClear(name string) (err error) {
 	resp, err := c.Client.Do("qclear", name)
 	if err != nil {
-		return fmt.Errorf("QClear %s error", name)
+		return fmt.Errorf("QClear %s error: %s", name, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -76,7 +76,7 @@ func (c *DbClient) qPush(name string, reverse bool, value ...interface{}) (size 
 
 	resp, err := c.Client.Do(args...)
 	if err != nil {
-		return -1, fmt.Errorf("%s %s error", qPushCmd[index], name)
+		return -1, fmt.Errorf("%s %s error: %s", qPushCmd[index], name, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.Int64(resp[1]), nil
@@ -134,7 +134,7 @@ func (c *DbClient) QPop(name string, reverse ...bool) (v string, err error) {
 	}
 	resp, err := c.Client.Do(qPopCmd[index], name)
 	if err != nil {
-		return "", fmt.Errorf("%s %s error", qPopCmd[index], name)
+		return "", fmt.Errorf("%s %s error: %s", qPopCmd[index], name, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.String(resp[1]), nil
@@ -174,7 +174,7 @@ func (c *DbClient) QPopArray(name string, size int64, reverse ...bool) (v []stri
 	}
 	resp, err := c.Client.Do(qPopCmd[index], name, size)
 	if err != nil {
-		return nil, fmt.Errorf("%s %s error", qPopCmd[index], name)
+		return nil, fmt.Errorf("%s %s error: %s", qPopCmd[index], name, err.Error())
 	}
 
 	respsize := len(resp)
@@ -233,7 +233,7 @@ func (c *DbClient) slice(name string, args ...int) (v []string, err error) {
 	}
 	resp, err := c.Client.Do(qSliceCmd[index], name, begin, end)
 	if err != nil {
-		return nil, fmt.Errorf("%s %s error", qSliceCmd[index], name)
+		return nil, fmt.Errorf("%s %s error: %s", qSliceCmd[index], name, err.Error())
 	}
 	size := len(resp)
 	if size >= 1 && resp[0] == "ok" {
@@ -259,7 +259,7 @@ func (c *DbClient) QTrim(name string, size int, reverse ...bool) (delSize int64,
 	}
 	resp, err := c.Client.Do(qTrimCmd[index], name, size)
 	if err != nil {
-		return -1, fmt.Errorf("%s %s error", qTrimCmd[index], name)
+		return -1, fmt.Errorf("%s %s error: %s", qTrimCmd[index], name, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.Int64(resp[1]), nil
@@ -297,7 +297,7 @@ func (c *DbClient) QTrimBack(name string, size int) (delSize int64, err error) {
 func (c *DbClient) QList(nameStart, nameEnd string, limit int64) ([]string, error) {
 	resp, err := c.Client.Do("qlist", nameStart, nameEnd, limit)
 	if err != nil {
-		return nil, fmt.Errorf("QList %s %s %v error", nameStart, nameEnd, limit)
+		return nil, fmt.Errorf("QList %s %s %v error: %s", nameStart, nameEnd, limit, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -322,7 +322,7 @@ func (c *DbClient) QList(nameStart, nameEnd string, limit int64) ([]string, erro
 func (c *DbClient) QRList(nameStart, nameEnd string, limit int64) ([]string, error) {
 	resp, err := c.Client.Do("qrlist", nameStart, nameEnd, limit)
 	if err != nil {
-		return nil, fmt.Errorf("QRList %s %s %v error", nameStart, nameEnd, limit)
+		return nil, fmt.Errorf("QRList %s %s %v error: %s", nameStart, nameEnd, limit, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -349,7 +349,7 @@ func (c *DbClient) QSet(key string, index int64, val interface{}) (err error) {
 	resp, err = c.Client.Do("qset", key, index, val)
 
 	if err != nil {
-		return fmt.Errorf("QSet %s error", key)
+		return fmt.Errorf("QSet %s error: %s", key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return nil
@@ -366,7 +366,7 @@ func (c *DbClient) QSet(key string, index int64, val interface{}) (err error) {
 func (c *DbClient) QGet(key string, index int64) (string, error) {
 	resp, err := c.Client.Do("qget", key, index)
 	if err != nil {
-		return "", fmt.Errorf("QGet %s error", key)
+		return "", fmt.Errorf("QGet %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.String(resp[1]), nil
@@ -382,7 +382,7 @@ func (c *DbClient) QGet(key string, index int64) (string, error) {
 func (c *DbClient) QFront(key string) (string, error) {
 	resp, err := c.Client.Do("qfront", key)
 	if err != nil {
-		return "", fmt.Errorf("QFront %s error", key)
+		return "", fmt.Errorf("QFront %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.String(resp[1]), nil
@@ -398,7 +398,7 @@ func (c *DbClient) QFront(key string) (string, error) {
 func (c *DbClient) QBack(key string) (string, error) {
 	resp, err := c.Client.Do("qback", key)
 	if err != nil {
-		return "", fmt.Errorf("QBack %s error", key)
+		return "", fmt.Errorf("QBack %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.String(resp[1]), nil
@@ -425,7 +425,7 @@ func (c *DbClient) qPushArray(name string, reverse bool, value []interface{}) (s
 	args = append(args, value...)
 	resp, err := c.Client.Do(args...)
 	if err != nil {
-		return -1, fmt.Errorf("%s %s error", qPushCmd[index], name)
+		return -1, fmt.Errorf("%s %s error: %s", qPushCmd[index], name, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return to.Int64(resp[1]), nil

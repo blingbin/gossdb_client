@@ -19,7 +19,7 @@ func (c *DbClient) Set(key string, val interface{}, ttl ...int64) (err error) {
 		resp, err = c.Client.Do("set", key, val)
 	}
 	if err != nil {
-		return fmt.Errorf("%s Set %s error", err.Error(), key)
+		return fmt.Errorf("set %s error: %s", key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return nil
@@ -36,7 +36,7 @@ func (c *DbClient) SetNx(key string, val interface{}) (string, error) {
 	resp, err := c.Client.Do("setnx", key, val)
 
 	if err != nil {
-		return "", fmt.Errorf("%s SetNx %s error", err.Error(), key)
+		return "", fmt.Errorf("SetNx %s error: %s", key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return string(resp[1]), nil
@@ -68,7 +68,7 @@ func (c *DbClient) Get(key string) (string, error) {
 func (c *DbClient) GetSet(key string, val interface{}) (string, error) {
 	resp, err := c.Client.Do("getset", key, val)
 	if err != nil {
-		return "", fmt.Errorf("%s Getset %s error", err.Error(), key)
+		return "", fmt.Errorf("GetSet %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return string(resp[1]), nil
@@ -84,7 +84,7 @@ func (c *DbClient) GetSet(key string, val interface{}) (string, error) {
 func (c *DbClient) Expire(key string, ttl int64) (re bool, err error) {
 	resp, err := c.Client.Do("expire", key, ttl)
 	if err != nil {
-		return false, fmt.Errorf("%s Expire %s error", err.Error(), key)
+		return false, fmt.Errorf("expire %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return resp[1] == "1", nil
@@ -99,7 +99,7 @@ func (c *DbClient) Expire(key string, ttl int64) (re bool, err error) {
 func (c *DbClient) Exists(key string) (re bool, err error) {
 	resp, err := c.Client.Do("exists", key)
 	if err != nil {
-		return false, fmt.Errorf("%s Exists %s error", err.Error(), key)
+		return false, fmt.Errorf("exists %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return resp[1] == "1", nil
@@ -113,7 +113,7 @@ func (c *DbClient) Exists(key string) (re bool, err error) {
 func (c *DbClient) Del(key string) error {
 	resp, err := c.Client.Do("del", key)
 	if err != nil {
-		return fmt.Errorf("%s Del %s error", err.Error(), key)
+		return fmt.Errorf("del %s error: %s", key, err.Error())
 	}
 	//response looks like s: [ok 1]
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -130,7 +130,7 @@ func (c *DbClient) Del(key string) error {
 func (c *DbClient) Ttl(key string) (ttl int64, err error) {
 	resp, err := c.Client.Do("ttl", key)
 	if err != nil {
-		return -1, fmt.Errorf("%s Ttl %s error", err.Error(), key)
+		return -1, fmt.Errorf("ttl %s error: %s", key, err.Error())
 	}
 	//response looks like s: [ok 1]
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -144,12 +144,12 @@ func (c *DbClient) Ttl(key string) (ttl int64, err error) {
 //  num 增加的值
 //  返回 val，整数，增加 num 后的新值
 //  返回 err，可能的错误，操作成功返回 nil
-func (c *DbClient) Inc(key string, num int64) (val int64, err error) {
+func (c *DbClient) IncR(key string, num int64) (val int64, err error) {
 
 	resp, err := c.Client.Do("incr", key, num)
 
 	if err != nil {
-		return -1, fmt.Errorf("%s Incr %s error", err.Error(), key)
+		return -1, fmt.Errorf("incr %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return strconv.ParseInt(resp[1], 10, 64)
@@ -171,7 +171,7 @@ func (c *DbClient) MultiSet(kvs map[string]interface{}) (err error) {
 	resp, err := c.Client.Do("multi_set", args)
 
 	if err != nil {
-		return fmt.Errorf("%s MultiSet %s error", err.Error(), kvs)
+		return fmt.Errorf("MultiSet %s error: %s", kvs, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -191,7 +191,7 @@ func (c *DbClient) MultiGet(key ...string) (val map[string]string, err error) {
 	resp, err := c.Client.Do("multi_get", key)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s MultiGet %s error", err.Error(), key)
+		return nil, fmt.Errorf("MultiGet %s error: %s", key, err.Error())
 	}
 
 	size := len(resp)
@@ -216,7 +216,7 @@ func (c *DbClient) MultiGetSlice(key ...string) (keys []string, values []string,
 	resp, err := c.Client.Do("multi_get", key)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s MultiGet %s error", err, key)
+		return nil, nil, fmt.Errorf("MultiGet %s error: %s", key, err.Error())
 	}
 
 	size := len(resp)
@@ -245,7 +245,7 @@ func (c *DbClient) MultiGetArray(key []string) (val map[string]string, err error
 	resp, err := c.Client.Do("multi_get", key)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s MultiGet %s error", err, key)
+		return nil, fmt.Errorf("MultiGet %s error: %s", key, err.Error())
 	}
 
 	size := len(resp)
@@ -270,7 +270,7 @@ func (c *DbClient) MultiGetArraySlice(key []string) (keys []string, values []str
 	resp, err := c.Client.Do("multi_get", key)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s MultiGet %s error", err, key)
+		return nil, nil, fmt.Errorf("MultiGet %s error: %s", key, err.Error())
 	}
 
 	size := len(resp)
@@ -299,7 +299,7 @@ func (c *DbClient) MultiDel(key ...string) (err error) {
 	resp, err := c.Client.Do("multi_del", key)
 
 	if err != nil {
-		return fmt.Errorf("%s MultiDel %s error", err, key)
+		return fmt.Errorf("MultiDel %s error: %s", key, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -336,7 +336,7 @@ func (c *DbClient) SetBit(key string, offset int64, bit byte) (byte, error) {
 func (c *DbClient) GetBit(key string, offset int64) (byte, error) {
 	resp, err := c.Client.Do("getbit", key, offset)
 	if err != nil {
-		return 255, fmt.Errorf("%s GetBit %s error", err, key)
+		return 255, fmt.Errorf("GetBit %s error: %s", key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return byte(int8(to.Int64(resp[1]))), nil
@@ -360,7 +360,7 @@ func (c *DbClient) Substr(key string, start int64, size ...int64) (val string, e
 	}
 
 	if err != nil {
-		return "", fmt.Errorf("%s Substr %s error", err, key)
+		return "", fmt.Errorf("substr %s error: %s", key, err.Error())
 	}
 	if len(resp) > 1 && resp[0] == "ok" {
 		return resp[1], nil
@@ -376,7 +376,7 @@ func (c *DbClient) Substr(key string, start int64, size ...int64) (val string, e
 func (c *DbClient) StrLen(key string) (int64, error) {
 	resp, err := c.Client.Do("strlen", key)
 	if err != nil {
-		return -1, fmt.Errorf("%s Strlen %s error", err, key)
+		return -1, fmt.Errorf("strlen %s error: %s", key, err.Error())
 	}
 	if len(resp) > 1 && resp[0] == "ok" {
 		return strconv.ParseInt(resp[1], 10, 64)
@@ -395,7 +395,7 @@ func (c *DbClient) Keys(keyStart, keyEnd string, limit int64) ([]string, error) 
 	resp, err := c.Client.Do("keys", keyStart, keyEnd, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s Keys %s %s %s error", err, keyStart, keyEnd, limit)
+		return nil, fmt.Errorf("keys %s %s %v error: %s", keyStart, keyEnd, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return resp[1:], nil
@@ -413,7 +413,7 @@ func (c *DbClient) Keys(keyStart, keyEnd string, limit int64) ([]string, error) 
 func (c *DbClient) RKeys(keyStart, keyEnd string, limit int64) ([]string, error) {
 	resp, err := c.Client.Do("rkeys", keyStart, keyEnd, limit)
 	if err != nil {
-		return nil, fmt.Errorf("%s Rkeys %s %s %s error", err, keyStart, keyEnd, limit)
+		return nil, fmt.Errorf("rkeys %s %s %v error: %s", keyStart, keyEnd, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return resp[1:], nil
@@ -432,7 +432,7 @@ func (c *DbClient) Scan(keyStart, keyEnd string, limit int64) (map[string]string
 	resp, err := c.Client.Do("scan", keyStart, keyEnd, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s Scan %s %s %s error", err, keyStart, keyEnd, limit)
+		return nil, fmt.Errorf("scan %s %s %v error: %s", keyStart, keyEnd, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		re := make(map[string]string)
@@ -458,7 +458,7 @@ func (c *DbClient) RScan(keyStart, keyEnd string, limit int64) (map[string]strin
 	resp, err := c.Client.Do("rscan", keyStart, keyEnd, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s Rscan %s %s %s error", err, keyStart, keyEnd, limit)
+		return nil, fmt.Errorf("rscan %s %s %v error: %s", keyStart, keyEnd, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		re := make(map[string]string)

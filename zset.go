@@ -14,7 +14,7 @@ import (
 func (c *DbClient) ZSet(setName, key string, score int64) (err error) {
 	resp, err := c.Client.Do("zset", setName, key, score)
 	if err != nil {
-		return fmt.Errorf("%s Zset %s/%s error", err, setName, key)
+		return fmt.Errorf("ZSet %s %s error: %s", setName, key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return nil
@@ -32,7 +32,7 @@ func (c *DbClient) ZSet(setName, key string, score int64) (err error) {
 func (c *DbClient) ZGet(setName, key string) (score int64, err error) {
 	resp, err := c.Client.Do("zget", setName, key)
 	if err != nil {
-		return 0, fmt.Errorf("%s ZGet %s/%s error", err, setName, key)
+		return 0, fmt.Errorf("ZGet %s/%s error: %s", setName, key, err.Error())
 	}
 	if len(resp) == 2 && resp[0] == "ok" {
 		return strconv.ParseInt(resp[1], 10, 64)
@@ -48,7 +48,7 @@ func (c *DbClient) ZGet(setName, key string) (score int64, err error) {
 func (c *DbClient) ZDel(setName, key string) (err error) {
 	resp, err := c.Client.Do("zdel", setName, key)
 	if err != nil {
-		return fmt.Errorf("%s ZDel %s/%s error", err, setName, key)
+		return fmt.Errorf("ZDel %s/%s error: %s", setName, key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return nil
@@ -64,7 +64,7 @@ func (c *DbClient) ZDel(setName, key string) (err error) {
 func (c *DbClient) ZExists(setName, key string) (re bool, err error) {
 	resp, err := c.Client.Do("zexists", setName, key)
 	if err != nil {
-		return false, fmt.Errorf("%s ZExists %s/%s error", err, setName, key)
+		return false, fmt.Errorf("ZExists %s/%s error: %s", setName, key, err.Error())
 	}
 
 	if len(resp) == 2 && resp[0] == "ok" {
@@ -82,7 +82,7 @@ func (c *DbClient) ZExists(setName, key string) (re bool, err error) {
 func (c *DbClient) ZCount(setName string, start, end interface{}) (count int64, err error) {
 	resp, err := c.Client.Do("zcount", setName, start, end)
 	if err != nil {
-		return -1, fmt.Errorf("%s ZCount %s %v %v error", err, setName, start, end)
+		return -1, fmt.Errorf("ZCount %s %v %v error: %s", setName, start, end, err)
 	}
 
 	if len(resp) == 2 && resp[0] == "ok" {
@@ -97,7 +97,7 @@ func (c *DbClient) ZCount(setName string, start, end interface{}) (count int64, 
 func (c *DbClient) ZClear(setName string) (err error) {
 	resp, err := c.Client.Do("zclear", setName)
 	if err != nil {
-		return fmt.Errorf("%s ZClear %s error", err, setName)
+		return fmt.Errorf("%s ZClear %s error: %s", err, setName, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -123,7 +123,7 @@ func (c *DbClient) ZScan(setName string, keyStart string, scoreStart, scoreEnd i
 	resp, err := c.Client.Do("zscan", setName, keyStart, scoreStart, scoreEnd, limit)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s ZScan %s %v %v %v %v error", err, setName, keyStart, scoreStart, scoreEnd, limit)
+		return nil, nil, fmt.Errorf("ZScan %s %v %v %v %v error: %s", setName, keyStart, scoreStart, scoreEnd, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		size := len(resp)
@@ -153,7 +153,7 @@ func (c *DbClient) ZrScan(setName string, keyStart string, scoreStart, scoreEnd 
 	resp, err := c.Client.Do("zrscan", setName, keyStart, scoreStart, scoreEnd, limit)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s ZrScan %s %v %v %v %v error", err, setName, keyStart, scoreStart, scoreEnd, limit)
+		return nil, nil, fmt.Errorf("ZrScan %s %v %v %v %v error: %s", setName, keyStart, scoreStart, scoreEnd, limit, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -186,7 +186,7 @@ func (c *DbClient) MultiZSet(setName string, kvs map[string]int64) (err error) {
 	resp, err := c.Client.Do("multi_zset", setName, args)
 
 	if err != nil {
-		return fmt.Errorf("%s MultiZset %s %s error", err, setName, kvs)
+		return fmt.Errorf("MultiZset %s %v error: %s", setName, kvs, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -208,7 +208,7 @@ func (c *DbClient) MultiZGet(setName string, key ...string) (val map[string]int6
 	resp, err := c.Client.Do("multi_zget", setName, key)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s MultiZget %s %s error", err, setName, key)
+		return nil, fmt.Errorf("MultiZget %s %s error: %s", setName, key, err.Error())
 	}
 	size := len(resp)
 	if size > 0 && resp[0] == "ok" {
@@ -236,7 +236,7 @@ func (c *DbClient) MultiZGetSlice(setName string, key ...string) (keys []string,
 	resp, err := c.Client.Do("multi_zget", setName, key)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s MultiZGetSlice %s %s error", err, setName, key)
+		return nil, nil, fmt.Errorf("MultiZGetSlice %s %s error: %s", setName, key, err.Error())
 	}
 
 	size := len(resp)
@@ -266,7 +266,7 @@ func (c *DbClient) MultiZGetArray(setName string, key []string) (val map[string]
 	resp, err := c.Client.Do("multi_zget", setName, key)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s MultiZGetArray %s %s error", err, setName, key)
+		return nil, fmt.Errorf("MultiZGetArray %s %s error: %s", setName, key, err.Error())
 	}
 	size := len(resp)
 	if size > 0 && resp[0] == "ok" {
@@ -293,7 +293,7 @@ func (c *DbClient) MultiZGetSliceArray(setName string, key []string) (keys []str
 	resp, err := c.Client.Do("multi_zget", setName, key)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s MultiZGetSliceArray %s %s error", err, setName, key)
+		return nil, nil, fmt.Errorf("MultiZGetSliceArray %s %s error: %s", setName, key, err.Error())
 	}
 
 	size := len(resp)
@@ -311,6 +311,7 @@ func (c *DbClient) MultiZGetSliceArray(setName string, key []string) (keys []str
 	return nil, nil, handError(resp, setName, key)
 }
 
+
 //批量删除 zset 中的 key-score.
 //
 //  setName zset名称
@@ -323,7 +324,7 @@ func (c *DbClient) MultiZDel(setName string, key ...string) (err error) {
 	resp, err := c.Client.Do("multi_zdel", key)
 
 	if err != nil {
-		return fmt.Errorf("%s MultiZDel %s %s error", err, setName, key)
+		return fmt.Errorf("MultiZDel %s %s error: %s", setName, key, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -345,7 +346,7 @@ func (c *DbClient) ZIncR(setName string, key string, num int64) (int64, error) {
 	}
 	resp, err := c.Client.Do("zincr", setName, key, num)
 	if err != nil {
-		return 0, fmt.Errorf("%s ZIncR %s %s %v", err, setName, key, num)
+		return 0, fmt.Errorf("ZIncR %s %s %v error: %s", setName, key, num, err.Error())
 	}
 
 	if len(resp) > 1 && resp[0] == "ok" {
@@ -364,9 +365,8 @@ func (c *DbClient) ZIncR(setName string, key string, num int64) (int64, error) {
 func (c *DbClient) ZList(nameStart, nameEnd string, limit int64) ([]string, error) {
 	resp, err := c.Client.Do("zlist", nameStart, nameEnd, limit)
 	if err != nil {
-		return nil, fmt.Errorf("%s ZList %s %s %v error", err, nameStart, nameEnd, limit)
+		return nil, fmt.Errorf("ZList %s %s %v error: %s", nameStart, nameEnd, limit, err.Error())
 	}
-
 	if len(resp) > 0 && resp[0] == "ok" {
 		size := len(resp)
 		keyList := make([]string, 0, size-1)
@@ -387,7 +387,7 @@ func (c *DbClient) ZList(nameStart, nameEnd string, limit int64) ([]string, erro
 func (c *DbClient) ZSize(name string) (val int64, err error) {
 	resp, err := c.Client.Do("zsize", name)
 	if err != nil {
-		return 0, fmt.Errorf("%s ZSize %s  error", err, name)
+		return 0, fmt.Errorf("ZSize %s  error: %s", name, err.Error())
 	}
 
 	if len(resp) > 0 && resp[0] == "ok" {
@@ -411,7 +411,7 @@ func (c *DbClient) ZKeys(setName string, keyStart string, scoreStart, scoreEnd i
 	resp, err := c.Client.Do("zkeys", setName, keyStart, scoreStart, scoreEnd, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s ZKeys %s %v %v %v %v error", err, setName, keyStart, scoreStart, scoreEnd, limit)
+		return nil, fmt.Errorf("ZKeys %s %v %v %v %v error: %s", setName, keyStart, scoreStart, scoreEnd, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		size := len(resp)
@@ -435,7 +435,7 @@ func (c *DbClient) ZSum(setName string, scoreStart, scoreEnd interface{}) (val i
 	resp, err := c.Client.Do("zsum", setName, scoreStart, scoreEnd)
 
 	if err != nil {
-		return 0, fmt.Errorf("%s ZSum %s %v %v  error", err, setName, scoreStart, scoreEnd)
+		return 0, fmt.Errorf("ZSum %s %v %v  error: %s", setName, scoreStart, scoreEnd, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = to.Int64(resp[1])
@@ -455,7 +455,7 @@ func (c *DbClient) ZAvg(setName string, scoreStart, scoreEnd interface{}) (val i
 	resp, err := c.Client.Do("zavg", setName, scoreStart, scoreEnd)
 
 	if err != nil {
-		return 0, fmt.Errorf("%s ZAvg %s %v %v  error", err, setName, scoreStart, scoreEnd)
+		return 0, fmt.Errorf("ZAvg %s %v %v  error: %s", setName, scoreStart, scoreEnd, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = to.Int64(resp[1])
@@ -474,7 +474,7 @@ func (c *DbClient) ZRank(setName, key string) (val int64, err error) {
 	resp, err := c.Client.Do("zrank", setName, key)
 
 	if err != nil {
-		return 0, fmt.Errorf("%s ZRank %s %s  error", err, setName, key)
+		return 0, fmt.Errorf("ZRank %s %s  error: %s", setName, key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = to.Int64(resp[1])
@@ -493,7 +493,7 @@ func (c *DbClient) ZRRank(setName, key string) (val int64, err error) {
 	resp, err := c.Client.Do("zrrank", setName, key)
 
 	if err != nil {
-		return 0, fmt.Errorf("%s ZRRank %s %s  error", err, setName, key)
+		return 0, fmt.Errorf("ZRRank %s %s  error: %s", setName, key, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = to.Int64(resp[1])
@@ -513,7 +513,7 @@ func (c *DbClient) ZRange(setName string, offset, limit int64) (val map[string]i
 	resp, err := c.Client.Do("zrange", setName, offset, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s ZRange %s %s %s  error", err, setName, offset, limit)
+		return nil, fmt.Errorf("ZRange %s %v %v  error: %s", setName, offset, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = make(map[string]int64)
@@ -537,7 +537,7 @@ func (c *DbClient) ZRangeSlice(setName string, offset, limit int64) (key []strin
 	resp, err := c.Client.Do("zrange", setName, offset, limit)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s ZRangeSlice %s %s %s  error", err, setName, offset, limit)
+		return nil, nil, fmt.Errorf("ZRangeSlice %s %v %v  error: %s", setName, offset, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = []int64{}
@@ -563,7 +563,7 @@ func (c *DbClient) ZRRange(setName string, offset, limit int64) (val map[string]
 	resp, err := c.Client.Do("zrrange", setName, offset, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s ZRRange %s %s %s  error", err, setName, offset, limit)
+		return nil, fmt.Errorf("ZRRange %s %v %v error: %s", setName, offset, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = make(map[string]int64)
@@ -588,7 +588,7 @@ func (c *DbClient) ZRRangeSlice(setName string, offset, limit int64) (key []stri
 	resp, err := c.Client.Do("zrrange", setName, offset, limit)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s ZRRangeSlice %s %s %s error", err, setName, offset, limit)
+		return nil, nil, fmt.Errorf("ZRRangeSlice %s %v %v error: %s", setName, offset, limit, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		val = []int64{}
@@ -613,7 +613,7 @@ func (c *DbClient) ZRemRangeByRank(setName string, start, end int64) (err error)
 	resp, err := c.Client.Do("zremrangebyrank", setName, start, end)
 
 	if err != nil {
-		return fmt.Errorf("%s ZRemRangeByRank %s %s %s error", err, setName, start, end)
+		return fmt.Errorf("ZRemRangeByRank %s %v %v error: %s", setName, start, end, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return nil
@@ -630,7 +630,7 @@ func (c *DbClient) ZRemRangeByScore(setName string, start, end int64) (err error
 	resp, err := c.Client.Do("zremrangebyscore", setName, start, end)
 
 	if err != nil {
-		return fmt.Errorf("%s ZRemRangeByScore %s %s %s  error", err, setName, start, end)
+		return fmt.Errorf("ZRemRangeByScore %s %v %v  error: %s", setName, start, end, err.Error())
 	}
 	if len(resp) > 0 && resp[0] == "ok" {
 		return nil
@@ -647,7 +647,7 @@ func (c *DbClient) ZPopFront(setName string, limit int64) (val map[string]int64,
 	resp, err := c.Client.Do("zpop_front", setName, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s ZPopFront %s %s  error", err, setName, limit)
+		return nil, fmt.Errorf("ZPopFront %s %v  error: %s", setName, limit, err.Error())
 	}
 	size := len(resp)
 	if size > 0 && resp[0] == "ok" {
@@ -669,7 +669,7 @@ func (c *DbClient) ZPopBack(setName string, limit int64) (val map[string]int64, 
 	resp, err := c.Client.Do("zpop_back", setName, limit)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s ZPopBack %s %s  error", err, setName, limit)
+		return nil, fmt.Errorf("ZPopBack %s %v  error: %s", setName, limit, err.Error())
 	}
 	size := len(resp)
 	if size > 0 && resp[0] == "ok" {
