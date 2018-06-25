@@ -3,7 +3,7 @@ package gossdb_client
 import (
 	"fmt"
 	"strconv"
-	"github.com/houbin910902/gossdb_client/to"
+	"github.com/houbin910902/to"
 )
 
 //  设置 zset 中指定 key 对应的权重值.
@@ -176,9 +176,9 @@ func (c *DbClient) ZrScan(setName string, keyStart string, scoreStart, scoreEnd 
 //  setName zset名称
 //  kvs 包含 key-score 的map
 //  返回 err，可能的错误，操作成功返回 nil
-func (c *DbClient) MultiZset(setName string, kvs map[string]int64) (err error) {
+func (c *DbClient) MultiZSet(setName string, kvs map[string]int64) (err error) {
 
-	args := []interface{}{}
+	var args []interface{}
 	for k, v := range kvs {
 		args = append(args, k)
 		args = append(args, v)
@@ -201,7 +201,7 @@ func (c *DbClient) MultiZset(setName string, kvs map[string]int64) (err error) {
 //  key 要获取key的列表，支持多个key
 //  返回 val 包含 key-score 的map
 //  返回 err，可能的错误，操作成功返回 nil
-func (c *DbClient) MultiZget(setName string, key ...string) (val map[string]int64, err error) {
+func (c *DbClient) MultiZGet(setName string, key ...string) (val map[string]int64, err error) {
 	if len(key) == 0 {
 		return make(map[string]int64), nil
 	}

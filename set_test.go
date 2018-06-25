@@ -3,21 +3,25 @@ package gossdb_client
 import (
 	"testing"
 	"fmt"
+	"time"
 )
 
 func TestSet(t *testing.T) {
-	db, err:= NewDbClient("127.0.0.1", 8888)
+	db, err:= NewDbClient("127.0.0.1", 8888, "11111111111111111111111111111111")
 	if err != nil{
 		t.Fatalf("NewDbClient fail err: %s", err.Error())
 	}
-
-	aRet, err := db.Auth("11111111111111111111111111111111")
-	if err != nil{
-		t.Fatalf("Auth fail err: %s", err)
-	}
-	fmt.Println("Auth ret: ", aRet)
+	defer db.CloseDbClient()
+	//aRet, err := db.Auth("")
+	//if err != nil{
+	//	t.Fatalf("Auth fail err: %s", err)
+	//}
+	//fmt.Println("Auth ret: ", aRet)
 
 	// 开始测试set
+
+	time.Sleep(time.Second*120)
+
 	err = db.Set("a", "123456")
 	if err != nil{
 		t.Fatalf("Set fail. err: %s", err.Error())
@@ -29,18 +33,19 @@ func TestSet(t *testing.T) {
 	if Value != "123456" {
 		t.Fatalf("Get fail. Values is %s", Value)
 	}
+	fmt.Printf("Value = %v", Value)
 }
 
 func TestAuth(t *testing.T)  {
-	db, err := NewDbClient("127.0.0.1", 8888)
+	db, err := NewDbClient("127.0.0.1", 8888, "11111111111111111111111111111111")
 	if err != nil{
 		t.Fatalf("NewDbClient fail err: %s", err.Error())
 	}
-	aRet, err := db.Auth("11111111111111111111111111111111")
-	if err != nil{
-		t.Fatalf("Auth fail err: %s", err)
-	}
-	fmt.Println("Auth ret: ", aRet)
+	//aRet, err := db.Auth("11111111111111111111111111111111")
+	//if err != nil{
+	//	t.Fatalf("Auth fail err: %s", err)
+	//}
+	//fmt.Println("Auth ret: ", aRet)
 
 
 	// 开始测试set

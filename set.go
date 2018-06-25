@@ -3,7 +3,7 @@ package gossdb_client
 import (
 	"fmt"
 	"strconv"
-	"github.com/houbin910902/gossdb_client/to"
+	"github.com/houbin910902/to"
 )
 
 //  设置指定 key 的值内容
@@ -410,7 +410,7 @@ func (c *DbClient) Keys(keyStart, keyEnd string, limit int64) ([]string, error) 
 //  limit int 最多返回这么多个元素.
 //  返回 返回包含 key 的数组.
 //  返回 err，可能的错误，操作成功返回 nil
-func (c *DbClient) Rkeys(keyStart, keyEnd string, limit int64) ([]string, error) {
+func (c *DbClient) RKeys(keyStart, keyEnd string, limit int64) ([]string, error) {
 	resp, err := c.Client.Do("rkeys", keyStart, keyEnd, limit)
 	if err != nil {
 		return nil, fmt.Errorf("%s Rkeys %s %s %s error", err, keyStart, keyEnd, limit)
@@ -453,7 +453,7 @@ func (c *DbClient) Scan(keyStart, keyEnd string, limit int64) (map[string]string
 //  limit int 最多返回这么多个元素.
 //  返回 返回包含 key 的数组.
 //  返回 err, 可能的错误, 操作成功返回 nil
-func (c *DbClient) Rscan(keyStart, keyEnd string, limit int64) (map[string]string, error) {
+func (c *DbClient) RScan(keyStart, keyEnd string, limit int64) (map[string]string, error) {
 
 	resp, err := c.Client.Do("rscan", keyStart, keyEnd, limit)
 

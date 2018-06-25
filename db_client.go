@@ -9,18 +9,33 @@ type DbClient struct {
 	Client *ssdb.Client
 }
 
-func NewDbClient(ip string, port int) (*DbClient, error) {
+func NewDbClient(ip string, port int, Password string) (*DbClient, error) {
 	var db DbClient
 	c, err := ssdb.Connect(ip, port)
 	if err != nil {
 		return &db, err
 	}
 	db.Client = c
-	return &db, nil
+	if Password == ""{
+		return &db, nil
+	}
+
+	_, err = db.Auth(Password)
+	if err == nil{
+		return &db, nil
+	}
+	db.CloseDbClient()
+	return nil, fmt.Errorf("auth failed, password is wrong")
 }
 
-func (c *DbClient) CloseDbClient()  {
-	c.Client.Close()
+
+
+
+func (c *DbClient) CloseDbClient() error {
+	if c != nil && c.Client != nil{
+		return c.Client.Close()
+	}
+	return nil
 }
 
 
